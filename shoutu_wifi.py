@@ -2,12 +2,7 @@
 # utf-8
 
 '''
-usage:
-
-在修改读者卡号和密码后, 直接运行: python3 shoutu_wifi.py
-
-
-这个版本登录之后验证状态使用的方法是再次登录然后查看返回页面, 有待改进
+usage: 在修改读者卡号和密码后, 直接运行: python3 shoutu_wifi.py
 
 '''
 
@@ -15,9 +10,12 @@ from urllib import parse
 from urllib import request
 from time import sleep
 import re
+import subprocess
+import os
 
-ACCOUNT = "xxxxxxxxx"
-PASSWORD = "xxxxxx"
+ACCOUNT = '000120162355'
+PASSWORD = '194910'
+
 
 
 def login():
@@ -31,19 +29,23 @@ def login():
     response = request.urlopen(req).read().decode("utf8")
     return response
 
+def check_connect():
+    fnull = open(os.devnull, 'w')
+    data = subprocess.call('ping -c 1 www.baidu.com', shell = True, stdout=fnull, stderr=fnull)
+    if data:
+        return False
+    else:
+        return True
 
 # main program
 if __name__ == "__main__":
+    login()
     while True:
-        response = login()
-        if re.search('在线窗口', response):
-            print('登录成功')
-            # sleep 29 分钟, 首图wifi 30分钟断线一次
-            sleep(1740)
-        elif re.search('输入的读者卡卡号或密码错误', response):
-            print('帐号或密码错误')
-            break
-        elif re.search('用户已经在线', response):
-            print('已在线')
+        state = check_connect()
+        if state:
+            print('already connected')
             sleep(60)
+        else:
+            login()
+            print('connect succeed')
 
