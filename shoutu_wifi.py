@@ -13,8 +13,8 @@ import re
 import subprocess
 import os
 
-ACCOUNT = '000120162355'
-PASSWORD = '194910'
+ACCOUNT = '000000000000'
+PASSWORD = '100000'
 
 
 
@@ -26,7 +26,7 @@ def login():
             }
     data = parse.urlencode(userinfo).encode('utf8')
     req = request.Request(url, data)
-    response = request.urlopen(req).read().decode("utf8")
+    response = request.urlopen(req, timeout=5).read().decode("utf8")
     return response
 
 def check_connect():
@@ -39,13 +39,16 @@ def check_connect():
 
 # main program
 if __name__ == "__main__":
-    login()
-    while True:
-        state = check_connect()
-        if state:
-            print('already connected')
-            sleep(60)
-        else:
-            login()
-            print('connect succeed')
+    try:
+        login()
+        while True:
+            state = check_connect()
+            if state:
+                print('already connected')
+                sleep(60)
+            else:
+                login()
+                print('connect succeed')
+    except:
+        print('something wrong...')
 
